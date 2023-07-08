@@ -19,8 +19,10 @@ def refresh_av_colors():
 
 
 def refresh_board():
+    global board_c4
+    
     file_a = {}
-    board = {}
+    board_c4 = {}
 
     # inputs individual cells into the dictionary
     # in the file cells range from 6 to 1
@@ -29,8 +31,7 @@ def refresh_board():
 
     # file range from 1 to 7
     for file in range(7):
-        board[file + 1] = file_a.copy()
-    return board
+        board_c4[file + 1] = file_a.copy()
 
 
 # prints playing board (first all cells are empty)
@@ -314,17 +315,18 @@ def play_again_2():
 
 
 def connect_4():
-    global board_c4
-    board_c4 = refresh_board()
     refresh_av_colors()
+    refresh_board()
 
     welcome()
     pre_game()
     p_1_starts()
     while True:
         refresh_board()
+        refresh_av_colors()
         play_again_1()
         refresh_board()
+        refresh_av_colors()
         play_again_2()
 
 
