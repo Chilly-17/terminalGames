@@ -2,31 +2,35 @@ from termcolor import colored
 import time
 from specialPrints import cyan_now_print, cyan_later_print
 from specialPrints import error_message, cyan_input
-print(time.time())
+
 
 # creating a dictionary of colors that can be used by players
 # they will be removed once they are chosen by the player
 # WARNING!!! Global dictionary
-available_colors = {
-    1: "🔵blue",
-    2: "🔴red",
-    3: "🟡yellow",
-    4: "🟢green",
-    5: "🟣magenta"
-}
+def refresh_av_colors():
+    global available_colors
+    available_colors = {
+        1: "🔵blue",
+        2: "🔴red",
+        3: "🟡yellow",
+        4: "🟢green",
+        5: "🟣magenta"
+    }
 
 
-file_a = {}
-board = {}
+def refresh_board():
+    file_a = {}
+    board = {}
 
-# inputs individual cells into the dictionary
-# in the file cells range from 6 to 1
-for cell in range(6):
-    file_a[6 - cell] = "  "
+    # inputs individual cells into the dictionary
+    # in the file cells range from 6 to 1
+    for cell in range(6):
+        file_a[6 - cell] = "  "
 
-# file range from 1 to 7
-for file in range(7):
-    board[file + 1] = file_a.copy()
+    # file range from 1 to 7
+    for file in range(7):
+        board[file + 1] = file_a.copy()
+    return board
 
 
 # prints playing board (first all cells are empty)
@@ -36,7 +40,7 @@ def print_board():
     for cell in range(6):
         line = "|"
         for file in range(7):
-            line += board[file + 1][6 - cell]
+            line += board_c4[file + 1][6 - cell]
             line += "|"
         print(line)
     print(22 * "¯")
@@ -61,8 +65,8 @@ class Player:
         self.file: int = file
         for row in range(6):
             value_of_file: int = ord(self.file) - 96  # a = 1, b = 2...
-            if board[value_of_file][row + 1] == "  ":
-                board[value_of_file][row + 1] = self.color
+            if board_c4[value_of_file][row + 1] == "  ":
+                board_c4[value_of_file][row + 1] = self.color
                 return True
         else:
             error_message("That file is full")
@@ -83,23 +87,44 @@ class Player:
         for file in range(1, 8):  # 1 - 7
             for key in range(1, 4):  # 1 - 3
                 if (
-                    board[file][key] == self.color
-                    and board[file][key + 1] == self.color
-                    and board[file][key + 2] == self.color
-                    and board[file][key + 3] == self.color
+                    board_c4[file][key] == self.color
+                    and board_c4[file][key + 1] == self.color
+                    and board_c4[file][key + 2] == self.color
+                    and board_c4[file][key + 3] == self.color
                 ):
-                    print("Vertical win")
                     return True
+
         # check for horizontal
         for file in range(1, 5):  # 1 - 4 the other the will be the increments
             for row in range(1, 7):  # 1 - 6 == all the rows
                 if (
-                    board[file][row] == self.color
-                    and board[file + 1][row] == self.color
-                    and board[file + 2][row] == self.color
-                    and board[file + 3][row] == self.color
+                    board_c4[file][row] == self.color
+                    and board_c4[file + 1][row] == self.color
+                    and board_c4[file + 2][row] == self.color
+                    and board_c4[file + 3][row] == self.color
                 ):
-                    print("Horizontal win")
+                    return True
+
+        # check for this diagonal: "/"
+        for file in range(1, 5):  # 1 - 4
+            for row in range(1, 4):  # 1 - 3
+                if (
+                    board_c4[file][row] == self.color
+                    and board_c4[file + 1][row + 1] == self.color
+                    and board_c4[file + 2][row + 2] == self.color
+                    and board_c4[file + 3][row + 3] == self.color
+                ):
+                    return True
+
+        # check for this diagonal "\"
+        for file in range(1, 5):
+            for row in range(4, 7):  # 4 - 6
+                if (
+                    board_c4[file][row] == self.color
+                    and board_c4[file + 1][row - 1] == self.color
+                    and board_c4[file + 2][row - 2] == self.color
+                    and board_c4[file + 3][row - 3] == self.color
+                ):
                     return True
 
     def player_win(self, passed_turns: int):
@@ -202,30 +227,106 @@ def p_2_turn():  # fix
         successful = player2c4.player_turn(chosen_file_str)
 
 
-def connect_4():
+def p_1_starts():
+
     passed_turns = 0
-    welcome()
-    pre_game()
     while passed_turns < 42:
+        print_board()
+
         p_1_turn()
         passed_turns += 1
+
         won_by_p1 = player1c4.win_check()
         if won_by_p1 is True:
             print_board()
             print("Player 1 wins")
             return "player 1 win"
+
         print_board()
+
         p_2_turn()
         passed_turns += 1
+
         won_by_p2 = player2c4.win_check()
         if won_by_p2 is True:
             print_board()
             print("Player 2 wins")
             return "player 2 win"
+
         print_board()
+
     if passed_turns == 42:
         cyan_now_print(" ")
         cyan_now_print("The game ended in a tie...")
 
 
-connect_4()
+def p_2_starts():
+
+    passed_turns = 0
+    while passed_turns < 42:
+        print_board()
+
+        p_2_turn()
+        passed_turns += 1
+
+        won_by_p2 = player2c4.win_check()
+        if won_by_p2 is True:
+            print_board()
+            print("Player 2 wins")
+            return "player 2 win"
+
+        print_board()
+
+        p_1_turn()
+        passed_turns += 1
+
+        won_by_p1 = player1c4.win_check()
+        if won_by_p1 is True:
+            print_board()
+            print("Player 1 wins")
+            return "player 1 win"
+
+        print_board()
+
+    if passed_turns == 42:
+        cyan_now_print(" ")
+        cyan_now_print("The game ended in a tie...")
+
+
+def play_again_1():
+    message: str = "Would you like to play another game? (Y)es/(N)o: "
+    play_again: str = cyan_input(message)
+    if play_again.upper() == "Y":
+        refresh_av_colors()
+        p_2_starts()
+    else:
+        quit("The game was stopped...")
+
+
+def play_again_2():
+    message: str = "Would you like to play another game? (Y)es/(N)o: "
+    play_again: str = cyan_input(message)
+    if play_again.upper() == "Y":
+        refresh_av_colors()
+        p_1_starts()
+    else:
+        quit("The game was stopped...")
+
+
+def connect_4():
+    global board_c4
+    board_c4 = refresh_board()
+    refresh_av_colors()
+
+    welcome()
+    pre_game()
+    p_1_starts()
+    while True:
+        refresh_board()
+        play_again_1()
+        refresh_board()
+        play_again_2()
+
+
+if __name__ == "__main__":
+    connect_4()
