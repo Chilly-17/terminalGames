@@ -2,6 +2,7 @@ from termcolor import colored
 import time
 from specialPrints import cyan_now_print, cyan_later_print
 from specialPrints import error_message, cyan_input
+from generalUseFunc import div
 
 
 # creating a dictionary of colors that can be used by players
@@ -20,7 +21,7 @@ def refresh_av_colors():
 
 def refresh_board():
     global board_c4
-    
+
     file_a = {}
     board_c4 = {}
 
@@ -60,17 +61,15 @@ class Player:
         self.color: str = player_details[1][0]
         # will be used for colored text
         self.color_for_text = player_details[1][1:]
-        pass
 
     def player_turn(self, file: int):
         self.file: int = file
+        value_of_file: int = ord(self.file) - 96  # a = 1, b = 2...
         for row in range(6):
-            value_of_file: int = ord(self.file) - 96  # a = 1, b = 2...
             if board_c4[value_of_file][row + 1] == "  ":
                 board_c4[value_of_file][row + 1] = self.color
                 return True
-        else:
-            error_message("That file is full")
+        error_message("That file is full")
 
     def choose_file(self):
         print(colored(f"It's {self.name}'s turn!", f"{self.color_for_text}"))
@@ -131,13 +130,15 @@ class Player:
     def player_win(self, passed_turns: int):
         x = self.color_for_text
         y = "Congratulations"
+        div()
         print(12 * "🎆")
         time.sleep(0.4)
         print(colored(f"{self.color} {y} {self.name} {self.color}", x))
         time.sleep(0.4)
-        print(colored("You won the game in {passed_turns} turns", x))
+        print(colored(f"You won the game in {passed_turns} turns", x))
         time.sleep(0.4)
         print(12 * "🎆")
+        div()
 
 
 # Loops while the return is None, can be used for 5 players max
@@ -240,7 +241,7 @@ def p_1_starts():
         won_by_p1 = player1c4.win_check()
         if won_by_p1 is True:
             print_board()
-            print("Player 1 wins")
+            player1c4.player_win(passed_turns=passed_turns)
             return "player 1 win"
 
         print_board()
@@ -251,7 +252,7 @@ def p_1_starts():
         won_by_p2 = player2c4.win_check()
         if won_by_p2 is True:
             print_board()
-            print("Player 2 wins")
+            player2c4.player_win(passed_turns=passed_turns)
             return "player 2 win"
 
         print_board()
@@ -273,7 +274,7 @@ def p_2_starts():
         won_by_p2 = player2c4.win_check()
         if won_by_p2 is True:
             print_board()
-            print("Player 2 wins")
+            player2c4.player_win(passed_turns=passed_turns)
             return "player 2 win"
 
         print_board()
@@ -284,7 +285,7 @@ def p_2_starts():
         won_by_p1 = player1c4.win_check()
         if won_by_p1 is True:
             print_board()
-            print("Player 1 wins")
+            player1c4.player_win(passed_turns=passed_turns)
             return "player 1 win"
 
         print_board()
@@ -295,26 +296,41 @@ def p_2_starts():
 
 
 def play_again_1():
-    message: str = "Would you like to play another game? (Y)es/(N)o: "
+    message: str = """What would you like to do?
+    
+    (1): Play another round
+    (2): Play another game
+    (Q): Quit
+    """
     play_again: str = cyan_input(message)
-    if play_again.upper() == "Y":
+    if play_again == "1":
         refresh_av_colors()
         p_2_starts()
+    elif play_again == "2":
+        import main
     else:
         quit("The game was stopped...")
 
 
 def play_again_2():
-    message: str = "Would you like to play another game? (Y)es/(N)o: "
+    message: str = """What would you like to do?
+    
+    (1): Play another round
+    (2): Play another game
+    (Q): Quit
+    """
     play_again: str = cyan_input(message)
-    if play_again.upper() == "Y":
+    if play_again.upper() == "1":
         refresh_av_colors()
         p_1_starts()
+    elif play_again == "2":
+        import main  # !!!! replace everything in main by func and call the function here please
     else:
         quit("The game was stopped...")
 
 
 def connect_4():
+    div()
     refresh_av_colors()
     refresh_board()
 
