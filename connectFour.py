@@ -1,3 +1,4 @@
+from main import main
 from termcolor import colored
 import time
 from specialPrints import cyan_now_print, cyan_later_print
@@ -297,7 +298,6 @@ def p_2_starts():
 
 def play_again_1():
     message: str = """What would you like to do?
-    
     (1): Play another round
     (2): Play another game
     (Q): Quit
@@ -307,14 +307,13 @@ def play_again_1():
         refresh_av_colors()
         p_2_starts()
     elif play_again == "2":
-        import main
+        main()
     else:
         quit("The game was stopped...")
 
 
 def play_again_2():
     message: str = """What would you like to do?
-    
     (1): Play another round
     (2): Play another game
     (Q): Quit
@@ -324,7 +323,7 @@ def play_again_2():
         refresh_av_colors()
         p_1_starts()
     elif play_again == "2":
-        import main  # !!!! replace everything in main by func and call the function here please
+        main()
     else:
         quit("The game was stopped...")
 
